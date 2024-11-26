@@ -2,7 +2,6 @@
 # Import the main Dual class
 from .dual import Dual
 
-
 # Import version information for the package
 from .version import __version__  # Ensure version.py contains this variable
 

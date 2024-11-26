@@ -23,11 +23,7 @@ classifiers = [
 
 # Runtime dependencies
 dependencies = [
-    "numpy",
-    "pandas",
-    "argparse",
-    "datetime",
-    "importlib.resources"
+    "numpy"
 ]
 
 [project.urls]

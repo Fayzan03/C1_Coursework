@@ -6,32 +6,45 @@ class Dual:
         self.dual=dual # Dual part of dual number
 
     # Return real part of dual number
-    def real(self):
+    def re(self):
         return self.real
     
     # Return dual part of a dual number
-    def dual(self):
+    def du(self):
         return self.dual
-        
-    # Overrides print statements so we get a dual number printed in a nice format
-    def __str__(self):
-        return "Dual(real={0}, dual={1})".format(self.real, self.dual)
+         
+    # Overrides output so we get a dual number displayed in a nice format
+    def __repr__(self):
+        return f"Dual(real={self.real}, dual={self.dual})" 
     
 
     # Arithmetic Operators
 
     # Overload the '+' operator 
     def __add__(self, other):
+        # Allow addition of real numbers on RHS
+        if isinstance(other, (int, float)):
+            other = Dual(other,0)
         res = Dual(self.real + other.real, self.dual + other.dual)
         return res
     
+    def __radd__(self, other):
+        return self.__add__(other)
+    
     # Overload the '-' operator 
     def __sub__(self, other):
+        if isinstance(other, (int, float)):
+            other = Dual(other,0)
         res = Dual(self.real - other.real, self.dual - other.dual)
         return res
     
+    def __rsub__(self, other):
+        return Dual(other-self.real, -self.dual)
+    
     # Overload the '*' operator 
     def __mul__(self, other):
+        if isinstance(other, (int, float)):
+            other = Dual(other,0)
         a=self.real
         b=self.dual
         c=other.real
@@ -39,20 +52,30 @@ class Dual:
         res = Dual(a * c, a * d + b * c)
         return res
     
+    def __rmul__(self, other):
+        return self.__mul__(other)
+    
     # Overload the '/' operator 
     def __truediv__(self, other):
+        if isinstance(other, (int, float)):
+            other = Dual(other,0)
         a=self.real
         b=self.dual
         c=other.real
         d=other.dual
-        if c > 1e-9:
+        try:
             res = Dual(a / c, (b * c - a * d) / c**2)
             return res
-        else:
-            raise ValueError("Divison invalid: c is (too close to) zero")
-        
+        except ZeroDivisionError:
+            print("Divison invalid: c is (too close to) zero")
+    
+    def __rtruediv__(self, other):
+        return self.__truediv__(other)
+    
     # Overload the '**' operator (for zero dual part only)   
     def __pow__(self, other):
+        if isinstance(other, (int, float)):
+            other = Dual(other,0)
         a=self.real
         b=self.dual
         n=other.real
@@ -67,16 +90,22 @@ class Dual:
 
     # Overload the '+=' operator
     def __iadd__(self, other):
+        if isinstance(other, (int, float)):
+            other = Dual(other,0)
         self = Dual(self.real + other.real, self.dual + other.dual)
         return self
     
     # Overload the '-=' operator 
     def __isub__(self, other):
+        if isinstance(other, (int, float)):
+            other = Dual(other,0)
         self = Dual(self.real - other.real, self.dual - other.dual)
         return self
 
     # Overload the '*=' operator 
     def __imul__(self, other):
+        if isinstance(other, (int, float)):
+            other = Dual(other,0)
         a=self.real
         b=self.dual
         c=other.real
@@ -84,8 +113,10 @@ class Dual:
         self = Dual(a * c, a * d + b * c)
         return self
     
-    # Overload the '/' operator 
+    # Overload the '/=' operator 
     def __idiv__(self, other):
+        if isinstance(other, (int, float)):
+            other = Dual(other,0)
         a=self.real
         b=self.dual
         c=other.real
@@ -101,6 +132,8 @@ class Dual:
 
     # Overload the '==' operator
     def __eq__(self, other):
+        if isinstance(other, (int, float)):
+            other = Dual(other,0)
         a=self.real
         b=self.dual
         c=other.real
@@ -112,6 +145,8 @@ class Dual:
     
     # Overload the '!=' operator
     def __ne__(self, other):
+        if isinstance(other, (int, float)):
+            other = Dual(other,0)
         a=self.real
         b=self.dual
         c=other.real
@@ -144,27 +179,40 @@ class Dual:
 
     # sine
     def sin(self):
-        res=Dual(np.sin(self.real), np.sin(self.dual))
+        a=self.real
+        b=self.dual
+        res=Dual(np.sin(a), b * np.cos(a))
         return res
 
     # cosine
     def cos(self):
-        res=Dual(np.cos(self.real), np.cos(self.dual))
+        a=self.real
+        b=self.dual
+        res=Dual(np.cos(a), - b * np.sin(a))
         return res
     
-    # tangent
+    # tangent (maybe add condition near poles)
     def tan(self):
-        res=Dual(np.tan(self.real), np.tan(self.dual))
+        a=self.real
+        b=self.dual
+        res=Dual(np.tan(a), b / (np.cos(a) ** 2))
         return res
     
     # natural logarithm
     def log(self):
-        res=Dual(np.log(self.real), np.log(self.dual))
-        return res
+        a=self.real
+        b=self.dual
+        if a > 1e-9:
+            res=Dual(np.log(a), b / a)
+            return res
+        else:
+            raise ValueError("Inversion invalid: a is (too close to) zero")   
     
     # exp
     def exp(self):
-        res=Dual(np.exp(self.real), np.exp(self.dual))
+        a=self.real
+        b=self.dual
+        res=Dual(np.exp(a), b * np.exp(a))
         return res
 
         
