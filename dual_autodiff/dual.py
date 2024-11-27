@@ -64,7 +64,7 @@ class Dual:
         try:
             return Dual(a / c, (b * c - a * d) / (c * c))
         except ZeroDivisionError:
-            print("Divison invalid: c is (too close to) zero")
+            print("Divison invalid: real part of divisor is zero")
     
     def __rtruediv__(self, other):
         if isinstance(other, (int, float)):
@@ -81,7 +81,7 @@ class Dual:
         if other.dual==0:
             return Dual(a ** n, n * b * a ** (n-1))
         else:
-            print("Power invalid: dual part of exponent is not zero")
+            print("Power invalid: dual part of exponent must be zero")
             raise ValueError()
             
     
@@ -125,7 +125,7 @@ class Dual:
             self = Dual(a / c, (b * c - a * d) / (c * c))
             return self
         except ZeroDivisionError:
-            print("Divison invalid: c is (too close to) zero")
+            print("Divison invalid: real part of divisor is zero")
         
 
     # Comparison Operators
@@ -165,7 +165,7 @@ class Dual:
         try:
             return Dual(1 / a, - b / a**2)
         except ZeroDivisionError:
-            print("Inversion invalid: a is (too close to) zero")
+            print("Inversion invalid: real part of dual number is zero")
         
     def __neg__(self):
         return Dual(-self.real, -self.dual)
@@ -200,7 +200,7 @@ class Dual:
         try:
             return Dual(np.log(a), b / a)
         except ZeroDivisionError:
-            print("Logarithm invalid: a is (too close to) zero")   
+            print("Logarithm invalid: real part of dual number is zero")   
     
     # exp
     def exp(self):

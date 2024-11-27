@@ -65,15 +65,17 @@ class TestBasicArithmetic:
         # Check division by zero
         Dual(2,1) / Dual(0,0)
         captured = capsys.readouterr()
-        assert "Divison invalid: c is (too close to) zero" in captured.out
+        assert "Divison invalid: real part of divisor is zero" in captured.out
         
-    def test_pow(self):
+    def test_pow(self, capsys: pytest.CaptureFixture[str]):
         assert Dual(2,1) ** 10 == Dual(1024,5120)
         assert Dual(2,1) ** 0 == Dual(1,0)
         assert Dual(2,1) ** 1 == Dual(2,1)
         assert Dual(2,1) ** Dual(2,0) == Dual(4,4)
         with pytest.raises(ValueError):
             Dual(2,1) ** Dual(2,1)
+            captured = capsys.readouterr()
+            assert "Power invalid: dual part of exponent must be zero" in captured.out
 
 class TestAssignmentOperators:
     def test_iadd(self):
@@ -105,7 +107,7 @@ class TestAssignmentOperators:
         assert x == Dual(1/3, -5/18)
         x /= Dual(0,0)
         captured = capsys.readouterr()
-        assert "Divison invalid: c is (too close to) zero" in captured.out
+        assert "Divison invalid: real part of divisor is zero" in captured.out
     
 class TestComparisonOperators:
     def test_eq(self):
@@ -123,7 +125,7 @@ class TestUnaryOperators:
         assert ~Dual(2,1) == Dual(0.5,-0.25)
         ~Dual(0,1)
         captured=capsys.readouterr()
-        assert "Inversion invalid: a is (too close to) zero" in captured.out
+        assert "Inversion invalid: real part of dual number is zero" in captured.out
 
     def test_neg(self):
         assert -Dual(2,1) == Dual(-2,-1)
@@ -153,12 +155,12 @@ class TestEssentialFunctions:
         x=Dual(2,1)
         assert x.log() == Dual(pytest.approx(np.log(2), rel=1e-9), 0.5)
         y=Dual(0,1)
+        with pytest.warns(RuntimeWarning):
+            y.log()
         captured = capsys.readouterr()
-        assert "Logarithm invalid: a is (too close to) zero" in captured.out
-        with pytest.raises(ValueError):
-            z==Dual(-1,1)
-
-
+        assert "Logarithm invalid: real part of dual number is zero" in captured.out
+        with pytest.warns(RuntimeWarning):
+            Dual(-1,1).log()
 
     def test_exp(self):
         x=Dual(0,1)
