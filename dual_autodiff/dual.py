@@ -25,9 +25,9 @@ class Dual:
         # Allow addition of real numbers on RHS
         if isinstance(other, (int, float)):
             other = Dual(other,0)
-        res = Dual(self.real + other.real, self.dual + other.dual)
-        return res
+        return Dual(self.real + other.real, self.dual + other.dual)
     
+    # Include addition of reals on the LHS
     def __radd__(self, other):
         return self.__add__(other)
     
@@ -35,8 +35,7 @@ class Dual:
     def __sub__(self, other):
         if isinstance(other, (int, float)):
             other = Dual(other,0)
-        res = Dual(self.real - other.real, self.dual - other.dual)
-        return res
+        return Dual(self.real - other.real, self.dual - other.dual)
     
     def __rsub__(self, other):
         return Dual(other-self.real, -self.dual)
@@ -49,8 +48,7 @@ class Dual:
         b=self.dual
         c=other.real
         d=other.dual
-        res = Dual(a * c, a * d + b * c)
-        return res
+        return Dual(a * c, a * d + b * c)
     
     def __rmul__(self, other):
         return self.__mul__(other)
@@ -64,13 +62,14 @@ class Dual:
         c=other.real
         d=other.dual
         try:
-            res = Dual(a / c, (b * c - a * d) / c**2)
-            return res
+            return Dual(a / c, (b * c - a * d) / (c * c))
         except ZeroDivisionError:
             print("Divison invalid: c is (too close to) zero")
     
     def __rtruediv__(self, other):
-        return self.__truediv__(other)
+        if isinstance(other, (int, float)):
+            other = Dual(other,0)
+        return other.__truediv__(self)
     
     # Overload the '**' operator (for zero dual part only)   
     def __pow__(self, other):
@@ -80,10 +79,11 @@ class Dual:
         b=self.dual
         n=other.real
         if other.dual==0:
-            res = Dual(a ** n, n * b * a ** (n-1))
-            return res
+            return Dual(a ** n, n * b * a ** (n-1))
         else:
-            raise ValueError("Invalid exponentiation: dual part must be zero")
+            print("Power invalid: dual part of exponent is not zero")
+            raise ValueError()
+            
     
 
     # Operate-and-Assign Operators
@@ -121,11 +121,11 @@ class Dual:
         b=self.dual
         c=other.real
         d=other.dual
-        if c > 1e-9:
-            self = Dual(a / c, (b * c - a * d) / c**2)
+        try:
+            self = Dual(a / c, (b * c - a * d) / (c * c))
             return self
-        else:
-            raise ValueError("Divison invalid: c is (too close to) zero")
+        except ZeroDivisionError:
+            print("Divison invalid: c is (too close to) zero")
         
 
     # Comparison Operators
@@ -162,16 +162,14 @@ class Dual:
     def __invert__(self):
         a=self.real
         b=self.dual
-        if a > 1e-9:
-            res = Dual(1 / a, - b / a**2)
-            return res
-        else:
-            raise ValueError("Inversion invalid: a is (too close to) zero")
+        try:
+            return Dual(1 / a, - b / a**2)
+        except ZeroDivisionError:
+            print("Inversion invalid: a is (too close to) zero")
         
     def __neg__(self):
-        res = Dual(-self.real, -self.dual)
-        return res
-    
+        return Dual(-self.real, -self.dual)
+        
     def __pos__(self):
         return self
 
@@ -181,39 +179,34 @@ class Dual:
     def sin(self):
         a=self.real
         b=self.dual
-        res=Dual(np.sin(a), b * np.cos(a))
-        return res
+        return Dual(np.sin(a), b * np.cos(a))
 
     # cosine
     def cos(self):
         a=self.real
         b=self.dual
-        res=Dual(np.cos(a), - b * np.sin(a))
-        return res
+        return Dual(np.cos(a), - b * np.sin(a))
     
     # tangent (maybe add condition near poles)
     def tan(self):
         a=self.real
         b=self.dual
-        res=Dual(np.tan(a), b / (np.cos(a) ** 2))
-        return res
+        return Dual(np.tan(a), b / (np.cos(a) ** 2))
     
     # natural logarithm
     def log(self):
         a=self.real
         b=self.dual
-        if a > 1e-9:
-            res=Dual(np.log(a), b / a)
-            return res
-        else:
-            raise ValueError("Inversion invalid: a is (too close to) zero")   
+        try:
+            return Dual(np.log(a), b / a)
+        except ZeroDivisionError:
+            print("Logarithm invalid: a is (too close to) zero")   
     
     # exp
     def exp(self):
         a=self.real
         b=self.dual
-        res=Dual(np.exp(a), b * np.exp(a))
-        return res
+        return Dual(np.exp(a), b * np.exp(a))
 
         
     
