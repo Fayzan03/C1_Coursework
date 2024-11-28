@@ -1,12 +1,12 @@
-dual\_autodiff package
+dual\_autodiff Package
 ======================
 
-Modules
--------
-  - dual_autodiff_dual
+.. Modules
+.. -------
+..  - dual_autodiff_dual
 
-dual\_autodiff\_dual module
---------------------------- 
+dual\_autodiff.dual Module
+-------------------------- 
 
 .. automodule:: dual_autodiff.dual
    :members:

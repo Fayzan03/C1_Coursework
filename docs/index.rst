@@ -20,7 +20,9 @@ Features
    :maxdepth: 2
    :caption: Contents:
 
-   dual_autodiff_dual
+   Tutorial Notebook <Tutorial/dual_autodiff.ipynb>
+
+   Documentation - dual_autodiff Package  <dual_autodiff_dual>
 
 Indices and tables
 ==================
