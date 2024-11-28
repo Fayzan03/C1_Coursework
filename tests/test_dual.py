@@ -18,7 +18,7 @@ class TestComponents:
         x=Dual(2,1)
         assert x.du() == 1
 
-def test_repr(capsys: pytest.CaptureFixture[str]):
+def test_repr(capsys):
     x=Dual(2,1)
     print(x)
     captured=capsys.readouterr()
@@ -55,7 +55,7 @@ class TestBasicArithmetic:
         assert 4 * Dual(2,1) == Dual(8,4)
         assert 2 * 3 == Dual(6,0)
 
-    def test_div(self, capsys: pytest.CaptureFixture[str]):
+    def test_div(self, capsys):
         # Some rounding error from division so we have to approximate the result here
         assert Dual(2,1.3) / Dual(-3.5,4.8) == Dual(-4/7, pytest.approx(-283/245, rel=1e-9))
         assert Dual(2,1) / Dual(2,-1) == Dual(1,1)
@@ -67,7 +67,7 @@ class TestBasicArithmetic:
         captured = capsys.readouterr()
         assert "Divison invalid: real part of divisor is zero" in captured.out
         
-    def test_pow(self, capsys: pytest.CaptureFixture[str]):
+    def test_pow(self, capsys):
         assert Dual(2,1) ** 10 == Dual(1024,5120)
         assert Dual(2,1) ** 0 == Dual(1,0)
         assert Dual(2,1) ** 1 == Dual(2,1)
@@ -99,7 +99,7 @@ class TestAssignmentOperators:
         x *= 2
         assert x == Dual(12,22)
 
-    def test_idiv(self, capsys: pytest.CaptureFixture[str]):
+    def test_idiv(self, capsys):
         x = Dual(2,1)
         x /= Dual(3,4)
         assert x == Dual(pytest.approx(2/3, rel=1e-9), pytest.approx(-5/9, rel=1e-9))
@@ -121,7 +121,7 @@ class TestComparisonOperators:
         assert Dual(2,0) != 3
 
 class TestUnaryOperators:
-    def test_invert(self, capsys: pytest.CaptureFixture[str]):
+    def test_invert(self, capsys):
         assert ~Dual(2,1) == Dual(0.5,-0.25)
         ~Dual(0,1)
         captured=capsys.readouterr()
@@ -151,7 +151,7 @@ class TestEssentialFunctions:
         y=Dual(np.pi/2,1)
         assert y.tan() == Dual(pytest.approx(np.tan(np.pi/2), rel=1e-9), pytest.approx(1/np.cos(np.pi/2)**2, rel=1e-9))
     
-    def test_log(self, capsys: pytest.CaptureFixture[str]):
+    def test_log(self, capsys):
         x=Dual(2,1)
         assert x.log() == Dual(pytest.approx(np.log(2), rel=1e-9), 0.5)
         y=Dual(0,1)
