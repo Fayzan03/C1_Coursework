@@ -36,10 +36,3 @@ write_to = "dual_autodiff/version.py"  # Where to write the dynamic version
 
 [tool.setuptools.packages.find]
 where = ["."]
-
-[tool.setuptools.package-data]
-"dual_autodiff" = ["data/*"]
-
-
-[project.scripts]
-dual_autodiff = "dual_autodiff.cli:main"
