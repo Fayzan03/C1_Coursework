@@ -26,10 +26,6 @@ dependencies = [
     "numpy"
 ]
 
-[project.urls]
-"Documentation" = "https://your-readthedocs-url-here"
-"Source" = "https://github.com/yourusername/_package"
-
 
 [tool.setuptools_scm]
 write_to = "dual_autodiff/version.py"  # Where to write the dynamic version

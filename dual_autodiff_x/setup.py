@@ -9,8 +9,7 @@ extensions = [
 
 # Call setup with cythonized extensions
 setup(
-    ext_modules=cythonize(extensions,
-    compiler_directives={'language_level': "3"}),
+    ext_modules=cythonize(extensions, compiler_directives={'language_level': "3"}),
     package_dir={"": "src"},
     packages=["dual_autodiff_x"],
 
