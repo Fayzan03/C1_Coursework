@@ -3,6 +3,9 @@ nbsphinx_kernel_name = 'python3' # Notebook kernel
 
 import sphinx_rtd_theme
 
+import os
+import sys
+sys.path.insert(0, os.path.abspath('..'))
 # -- Project information -----------------------------------------------------
 
 project = 'Automatic Differentiation with Dual Numbers'
