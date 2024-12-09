@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel", "setuptools_scm", "build"]  # Build requirements
+requires = ["setuptools", "wheel", "build","setuptools_scm"]  # Build requirements
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -31,4 +31,4 @@ dependencies = [
 write_to = "dual_autodiff/version.py"  # Where to write the dynamic version
 
 [tool.setuptools.packages.find]
-where = ["."]
+where = ["dual_autodiff"]

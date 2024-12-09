@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools", "Cython", "wheel", "setuptools_scm", "build"]  # Build requirements
+requires = ["setuptools", "Cython", "wheel", "build"]  # Build requirements
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "dual_autodiff_x"
-dynamic = ["version"]
+version = "0.1.0" 
 description = "A Cython package for performing automatic differentiation using dual numbers."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -25,9 +25,6 @@ classifiers = [
 dependencies = [
     "numpy"
 ]
-
-[tool.setuptools_scm]
-write_to = "src/dual_autodiff_x/version.py"  # Where to write the dynamic version
 
 [tool.setuptools]
 package-dir = {"" = "src"}
