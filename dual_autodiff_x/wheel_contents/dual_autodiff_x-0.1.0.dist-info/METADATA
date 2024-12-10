@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: dual_autodiff_x
+Version: 0.1.0
+Summary: A Cython package for performing automatic differentiation using dual numbers.
+Author-email: Fayzan <fm565@cam.ac.uk>
+Keywords: automatic differentiation,forward-mode,deep neural networks
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Software Development :: Libraries
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: numpy
