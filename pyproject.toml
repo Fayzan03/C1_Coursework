@@ -4,7 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "dual_autodiff"
-dynamic = ["version"]
+#dynamic = ["version"]
+version = "0.1.0"
 description = "A Python package for performing automatic differentiation using dual numbers."
 readme = "README.md"
 requires-python = ">=3.9"
@@ -27,8 +28,8 @@ dependencies = [
 ]
 
 
-[tool.setuptools_scm]
-write_to = "dual_autodiff/version.py"  # Where to write the dynamic version
+#[tool.setuptools_scm]
+#write_to = "dual_autodiff/version.py"  # Where to write the dynamic version
 
 [tool.setuptools.packages.find]
-where = ["dual_autodiff"]
+where = ["."]

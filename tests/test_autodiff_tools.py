@@ -1,7 +1,7 @@
 # tests/test_dual.py
 
 import pytest
-from src/dual_autodiff_x.dual import Dual
+from dual_autodiff.dual import Dual
 import numpy as np
 
 class TestEssentialFunctions:
