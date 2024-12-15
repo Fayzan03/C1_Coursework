@@ -5765,7 +5765,7 @@ PyObject *const *__pyx_args, Py_ssize_t __pyx_nargs, PyObject *__pyx_kwds
 PyObject *__pyx_args, PyObject *__pyx_kwds
 #endif
 ); /*proto*/
-PyDoc_STRVAR(__pyx_doc_15dual_autodiff_x_4dual_4Dual_24__pow__, "\n        Overloads the '**' operator so that we can raise dual numbers to a (int, float, Dual) exponent. \n        Note that if the exponent is an instance of the Dual class, the dual part of the exponent must be zero, otherwise an error is raised.\n        \n        Returns:\n            - Dual: A new dual number which is the difference of the two dual numbers.\n        ");
+PyDoc_STRVAR(__pyx_doc_15dual_autodiff_x_4dual_4Dual_24__pow__, "\n        Overloads the '**' operator so that we can raise dual numbers to a (int, float, Dual) exponent. \n        Note that if the exponent is an instance of the Dual class, the dual part of the exponent must be zero, otherwise an error is raised.\n        \n        Returns:\n            - Dual: A dual number raised to an exponent.\n        ");
 static PyMethodDef __pyx_mdef_15dual_autodiff_x_4dual_4Dual_25__pow__ = {"__pow__", (PyCFunction)(void*)(__Pyx_PyCFunction_FastCallWithKeywords)__pyx_pw_15dual_autodiff_x_4dual_4Dual_25__pow__, __Pyx_METH_FASTCALL|METH_KEYWORDS, __pyx_doc_15dual_autodiff_x_4dual_4Dual_24__pow__};
 static PyObject *__pyx_pw_15dual_autodiff_x_4dual_4Dual_25__pow__(PyObject *__pyx_self, 
 #if CYTHON_METH_FASTCALL
@@ -5891,7 +5891,7 @@ static PyObject *__pyx_pf_15dual_autodiff_x_4dual_4Dual_24__pow__(CYTHON_UNUSED 
   __Pyx_INCREF(__pyx_v_other);
 
   /* "dual_autodiff_x/dual.pyx":159
- *             - Dual: A new dual number which is the difference of the two dual numbers.
+ *             - Dual: A dual number raised to an exponent.
  *         """
  *         if isinstance(other, (int, float)):             # <<<<<<<<<<<<<<
  *             other = Dual(other,0)
@@ -5943,7 +5943,7 @@ static PyObject *__pyx_pf_15dual_autodiff_x_4dual_4Dual_24__pow__(CYTHON_UNUSED 
     __pyx_t_3 = 0;
 
     /* "dual_autodiff_x/dual.pyx":159
- *             - Dual: A new dual number which is the difference of the two dual numbers.
+ *             - Dual: A dual number raised to an exponent.
  *         """
  *         if isinstance(other, (int, float)):             # <<<<<<<<<<<<<<
  *             other = Dual(other,0)

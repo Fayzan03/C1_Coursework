@@ -154,7 +154,7 @@ class Dual:
         Note that if the exponent is an instance of the Dual class, the dual part of the exponent must be zero, otherwise an error is raised.
         
         Returns:
-            - Dual: A new dual number which is the difference of the two dual numbers.
+            - Dual: A dual number raised to an exponent.
         """
         if isinstance(other, (int, float)):
             other = Dual(other,0)
