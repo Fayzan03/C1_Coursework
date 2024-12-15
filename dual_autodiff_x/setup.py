@@ -4,7 +4,6 @@ from Cython.Build import cythonize
 # Define the extensions (Cython modules)
 extensions = [
     Extension("dual_autodiff_x.dual", ["src/dual_autodiff_x/dual.pyx"]),
-    Extension("dual_autodiff_x.autodiff_tools", ["src/dual_autodiff_x/autodiff_tools.pyx"]),
 ]
 
 # Call setup with cythonized extensions

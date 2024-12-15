@@ -1,6 +1,6 @@
 import numpy as np
 
-class Dual:
+cdef class Dual:
     """
     A class to implement basic operations and common functions on dual numbers.
 
@@ -8,8 +8,10 @@ class Dual:
         - real (int, float): The real part of a dual number.
         - dual (int, float): The dual part of a dual number.
     """
+    cdef double real
+    cdef double dual
 
-    def __init__(self, real, dual):
+    def __init__(self, double real, double dual):
         """
         Initialises an instance of the dual class with a dual number consisting of a real part and dual part.
 
@@ -51,7 +53,7 @@ class Dual:
 
     # Arithmetic Operators
     
-    def __add__(self, other):
+    def __add__(self, Dual other):
         """
         Overloads the '+' operator so that we can add dual numbers. 
         Also allows the addition of real numbers (i.e. int, float) to dual numbers on RHS.
@@ -63,7 +65,7 @@ class Dual:
             other = Dual(other,0)
         return Dual(self.real + other.real, self.dual + other.dual)
     
-    def __radd__(self, other):
+    def __radd__(self, Dual other):
         """
         Allows the addition of real numbers (i.e. int, float) to dual numbers on LHS.
 
@@ -72,7 +74,7 @@ class Dual:
         """
         return self.__add__(other)
     
-    def __sub__(self, other):
+    def __sub__(self, Dual other):
         """
         Overloads the '-' operator so that we can subtract dual numbers. 
         Also allows the subtraction of real numbers (i.e. int, float) on RHS.
@@ -84,7 +86,7 @@ class Dual:
             other = Dual(other,0)
         return Dual(self.real - other.real, self.dual - other.dual)
     
-    def __rsub__(self, other):
+    def __rsub__(self, Dual other):
         """
         Allows the subtraction of real numbers (i.e. int, float) to dual numbers on LHS.
 
@@ -93,7 +95,7 @@ class Dual:
         """
         return Dual(other-self.real, -self.dual)
     
-    def __mul__(self, other):
+    def __mul__(self, Dual other):
         """
         Overloads the '*' operator so that we can multiply dual numbers. 
         Also allows the multiplication of real numbers (i.e. int, float) on RHS.
@@ -109,7 +111,7 @@ class Dual:
         d=other.dual
         return Dual(a * c, a * d + b * c)
     
-    def __rmul__(self, other):
+    def __rmul__(self, Dual other):
         """
         Allows the mutipliation of real numbers (i.e. int, float) to dual numbers on LHS.
 
@@ -118,7 +120,7 @@ class Dual:
         """
         return self.__mul__(other)
     
-    def __truediv__(self, other):
+    def __truediv__(self, Dual other):
         """
         Overloads the '/' operator so that we can divide dual numbers. 
         Also allows the division of real numbers (i.e. int, float) on RHS.
@@ -137,7 +139,7 @@ class Dual:
         except ZeroDivisionError:
             print("Divison invalid: real part of divisor is zero")
     
-    def __rtruediv__(self, other):
+    def __rtruediv__(self, Dual other):
         """
         Allows the division of real numbers (i.e. int, float) to dual numbers on LHS.
 
@@ -148,7 +150,7 @@ class Dual:
             other = Dual(other,0)
         return other.__truediv__(self)
     
-    def __pow__(self, other):
+    def __pow__(self, Dual other):
         """
         Overloads the '**' operator so that we can raise dual numbers to a (int, float, Dual) exponent. 
         Note that if the exponent is an instance of the Dual class, the dual part of the exponent must be zero, otherwise an error is raised.
@@ -171,7 +173,7 @@ class Dual:
 
     # Operate-and-Assign Operators
 
-    def __iadd__(self, other):
+    def __iadd__(self, Dual other):
         """
         Overloads the '+=' operator so that it also works with dual numbers.
 
@@ -183,7 +185,7 @@ class Dual:
         self = Dual(self.real + other.real, self.dual + other.dual)
         return self
     
-    def __isub__(self, other):
+    def __isub__(self, Dual other):
         """
         Overloads the '-=' operator so that it also works with dual numbers.
 
@@ -195,7 +197,7 @@ class Dual:
         self = Dual(self.real - other.real, self.dual - other.dual)
         return self
 
-    def __imul__(self, other):
+    def __imul__(self, Dual other):
         """
         Overloads the '*=' operator so that it also works with dual numbers.
 
@@ -211,7 +213,7 @@ class Dual:
         self = Dual(a * c, a * d + b * c)
         return self
     
-    def __idiv__(self, other):
+    def __idiv__(self, Dual other):
         """
         Overloads the '/=' operator so that it also works with dual numbers.
 
@@ -233,7 +235,7 @@ class Dual:
 
     # Comparison Operators
 
-    def __eq__(self, other):
+    def __eq__(self, Dual other):
         """
         Overloads the '==' operator so that it also works with dual numbers.
 
@@ -251,7 +253,7 @@ class Dual:
         else:
             return False
     
-    def __ne__(self, other):
+    def __ne__(self, Dual other):
         """
         Overloads the '!=' operator so that it also works with dual numbers.
 
@@ -296,13 +298,88 @@ class Dual:
 
 # Other essential functions:
 
-from .autodiff_tools import sin, cos, tan, log, exp
+    def sin(self):
+        """
+        Applies the trigonometric function 'sine' to a dual number.
+        
+        Returns:
+            - Dual: A new dual number which is the sine of the dual number.
 
-Dual.sin = sin
-Dual.cos = cos
-Dual.tan = tan
-Dual.log = log
-Dual.exp = exp
+        Example:
+            >>> x = Dual(2, 1)
+            >>> x.sin()
+            Dual(real=0.9092974268256817, dual=-0.4161468365471424)
+        """
+        a=self.real
+        b=self.dual
+        return Dual(np.sin(a), b * np.cos(a))
+
+    def cos(self):
+        """
+        Applies the trigonometric function 'cosine' to a dual number.
+        
+        Returns:
+            - Dual: A new dual number which is the cosine of the dual number.
+        
+        Example:
+            >>> x = Dual(2, 1)
+            >>> x.cos()
+            Dual(real=-0.4161468365471424, dual=-0.9092974268256817)
+        """
+        a=self.real
+        b=self.dual
+        return Dual(np.cos(a), - b * np.sin(a))
+
+    def tan(self):
+        """
+        Applies the trigonometric function 'tangent (tan)' to a dual number.
+        
+        Returns:
+            - Dual: A new dual number which is the tangent of the dual number.
+        
+        Example:
+            >>> x = Dual(2, 1)
+            >>> x.tan()
+            Dual(real=-2.185039863261519, dual=5.774399204041917)
+        """
+        a=self.real
+        b=self.dual
+        return Dual(np.tan(a), b / (np.cos(a) ** 2))
+
+    def log(self):
+        """
+        Applies the natural logarithm to a dual number.
+
+        Returns:
+            - Dual: A new dual number which is the natural logarithm of the dual number.
+        
+        Example:
+            >>> x = Dual(2, 1)
+            >>> x.log()
+            Dual(real=0.6931471805599453, dual=0.5)
+        """
+        a=self.real
+        b=self.dual
+        try:
+            return Dual(np.log(a), b / a)
+        except ZeroDivisionError:
+            print("Logarithm invalid: real part of dual number is zero")   
+
+    def exp(self):
+        """
+        Applies the exponential function to a dual number.
+
+        Returns:
+            - Dual: A new dual number which is the exponential of the dual number.
+
+        Example:
+            >>> x = Dual(2, 1)
+            >>> x.exp()
+            Dual(real=7.38905609893065, dual=7.38905609893065)
+        """
+        a=self.real
+        b=self.dual
+        return Dual(np.exp(a), b * np.exp(a))
 
 
 
