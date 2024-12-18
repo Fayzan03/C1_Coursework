@@ -10,6 +10,7 @@
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{filecontents}
+\usepackage{subcaption}
 
 \title{C1: Research Computing Coursework Assignment}
 \author{Fayzan Mahmood}
@@ -56,7 +57,7 @@ breaklines=true,
 captionpos=b, 
 numbers=left,
 stepnumber=1,
-language=toml } 
+language=python } 
 % Display the content of pyproject.toml 
 \lstinputlisting{pyproject.toml}
 
@@ -112,7 +113,8 @@ Docstrings have been provided for the \texttt{Dual} class and its member functio
 \subsection{ Installing the Package }
 I created a virtual environment in which to install the package. To do this, I ran the following commands in the root directory:
 \begin{lstlisting}
-    
+    python -m venv venvs/c1_cwk
+    source venvs/c1_cwk/Scripts/activate
 \end{lstlisting}
 Then I run the following command to install the \texttt{dual\_autodiff} package:
 \begin{lstlisting}
@@ -126,6 +128,21 @@ I can then import the package from anywhere by opening a python session and writ
 and the version number is displayed to confirm the package has been imported successfully.
 
 \subsection{ Computing Derivatives using the Package } \label{compderivs}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\linewidth]{q5_derivative.png}
+    \caption{Derivative of \(f(x) = \log(\sin(x)) +x^2 \cos(x)\) at \(x=1.5\).}
+    \label{fig:q5_derivative}
+\end{figure}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7\linewidth]{q5_error.png}
+    \caption{Absolute value of error in the numerical derivative of \(f(x) = \log(\sin(x)) +x^2 \cos(x)\) at \(x=1.5\). }
+    \label{fig:q5_error}
+\end{figure}
+
 The code for this section, including the code to make the plots, can be found in the tutorial notebook \texttt{dual\_autodiff.ipynb}, which is located in the \texttt{docs/Tutorial} directory in the GitLab repository.
 
 As explained earlier, the derivative of any function at $x=a$ can be computed by evaluating the function at $a+\epsilon$ and taking the dual part. Here we evaluate the gradient for the function $ f(x) = \log(\sin(x)) + x^2 \cos(x) $ at $x=1.5$. Computing the derivative using dual numbers and comparing it to the analytical gradient evaluated at the same point, we find that the two results agree up to machine precision (that is, to 16 decimal places). This shows that the dual number method is very accurate, which is highly useful for performing automatic differentiation. This also indicates that the \texttt{Dual} class has been implemented correctly. 
@@ -134,20 +151,7 @@ For further comparison, I compute the numerical derivative of the function using
 
 In summary, the numerical derivative is limited by the step size we choose (which is not the case when using dual numbers) and is far less accurate than either the analytical or dual derivative. By contrast, the dual derivative agrees with the analytical one up to machine precision. 
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{q5_derivative.png}
-    \caption{Enter Caption}
-    \label{fig:q5_derivative}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{q5_error.png}
-    \caption{Enter Caption}
-    \label{fig:q5_error}
-\end{figure}
-
+    
 \section{Implementing a Test Suite} \label{tests}
 The test suite was implemented using \texttt{pytest}. The test files are located in the \texttt{tests} directory in the GitLab repository and contains two test files corresponding to the two modules in the \texttt{dual\_autodiff} directory. I also had to include a blank \texttt{\_\_init\_\_.py} file to remove an error in importing the package when running the tests.
 
@@ -167,7 +171,7 @@ The above checks were carried out using the \texttt{assert} statement. Other tes
 
 We can then run the test suite with the following command in the root directory:
 \begin{lstlisting}
-    pytest -s test/*
+    pytest -s tests/*
 \end{lstlisting}
 and all of my tests are successful. 
 
@@ -209,8 +213,18 @@ and this created the \texttt{.c} and \texttt{.pyd} files as expected.
 I was then able to install the Cythonized package with \texttt{pip install -e .} from inside the \texttt{dual\_autodiff\_x} directory successfully.
 
 \subsection{ Comparing Performance }
-\textbf{Discuss the static typing (cdef, double real dual and Dual other, results from notebook and add plots.
-}
+
+After creating the Cython package, I decided to include static typing in my source code to further optimise the code. The purpose of this is to declare the variable type so that it is known at compile time, removing the need for type checking during execution \textbf{REFERENCE}. Changing the \texttt{def class Dual} to \texttt{cdef class Dual}, or including variable declarations such as \texttt{cdef double real} help are examples of the static typing I included. A consequence of this is that my Cython package can no longer apply the binary operators (e.g. +,-,*,/,+=,...) I defined in the Dual class to a Dual and a non-Dual type (for example, \texttt{Dual(2,1) + 2} is no longer permitted but \texttt{Dual(2,1) + Dual(2,0)} is). Since this would have required redefining many of the functions in my package, I decided to leave this extra functionality out since it is not strictly required for the package to work. 
+
+I compared the performance of both packages in the tutorial notebook by running a set of operations and functions implemented in the packages. I then computed the total time taken to run these tests for different numbers of iterations over 10 calls using the \texttt{timeit} library. The results of this performance comparison are shown in Figure \ref{fig:q9_timeit}. For example, for 100000 iterations I computed an execution time of 13.44 seconds for the Python package compared to 7.55 seconds for the Cython package. From the first graph, we observe that the Cythonized package is slightly faster across different numbers of samples, and is almost twice as fast as is deduced from the second graph. This is due to the fact that the Cython code is compiled in C++, which provides an initial speedup, and static typing which provides an additional speedup. Further optimisation may improve the difference in performance further. \textbf{ADD HERE?}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{q9_timeit.png}
+    \caption{Comparing the performance of the pure Python and Cythonized packages.}
+    \label{fig:q9_timeit}
+\end{figure}
+
 \subsection{Linux Wheels}
 To build wheels for the Cythonized package I use \texttt{cibuildwheel} and run Docker on my Windows PC by installing Docker Desktop and opening it. I built Linux wheels for Python 3.11 using the following command given in C1 notes: \textbf{REFERENCE}
 \begin{lstlisting}
@@ -220,6 +234,8 @@ To build wheels for the Cythonized package I use \texttt{cibuildwheel} and run D
 
  \subsection{ Using the Linux Wheels }
 
- discuss CSD3, WSL.
+I now install the package using the wheels I have just created. After uploading the wheels to GitLab and downloading them again, I attempted to install the package on Windows Subsystem for Linux (WSL) on my PC. After creating a virtual environment in the Ubuntu terminal, I was able to install the Python 3.10 wheel successfully using \texttt{pip}. I was then able to run the package in a Python session and import the package in the tutorial notebook (after installing Jupyter with \texttt{pip install Jupyter}). Note that, in order to use the tutorial notebook fully, we also need to install \texttt{numpy, matplotlib} and the \texttt{dual\_autodiff} package as most of the examples are designed for the Python package, not the Cython one. For this reason, I have also created the \texttt{cython\_test} notebook to check that the package runs correctly. 
+
+I also installed the Python 3.11 wheel on CSD3 using the \texttt{scp} command to transfer the downloaded wheel file. The wheel installed successfully and I was able to use the package in a Python session. 
 
 \end{document}
