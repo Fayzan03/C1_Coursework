@@ -16,6 +16,8 @@ Features
 ========
  - **Dual class:** Core attributes and methods. It is used to create dual numbers and implement arithmetic operations on them as well as some common mathematical functions.
 
+For an example of how to differentiate a function using the **dual_autodiff** package, see the tutorial notebook below.
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
@@ -24,8 +26,5 @@ Features
 
    Documentation - dual_autodiff Package  <dual_autodiff_dual>
 
-Indices and tables
-==================
-* :ref:`genindex`
 
 

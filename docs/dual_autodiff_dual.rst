@@ -12,7 +12,7 @@ dual\_autodiff.dual Module
 .. automodule:: dual_autodiff.dual
    :members:
    :show-inheritance:
-   :exclude-members: __hash__, __weakref__
+   :exclude-members: __hash__, __weakref__, sin, cos, tan, log, exp
    :special-members: 
    :member-order: bysource
    :noindex:

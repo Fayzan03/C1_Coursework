@@ -8,8 +8,8 @@ cdef class Dual:
         - real (int, float): The real part of a dual number.
         - dual (int, float): The dual part of a dual number.
     """
-    cdef double real
-    cdef double dual
+    cdef public double real
+    cdef public double dual
 
     def __init__(self, double real, double dual):
         """
@@ -61,8 +61,7 @@ cdef class Dual:
         Returns:
             - Dual: A new dual number which is the sum of the two dual numbers.
         """
-        if isinstance(other, (int, float)):
-            other = Dual(other,0)
+        
         return Dual(self.real + other.real, self.dual + other.dual)
     
     def __radd__(self, Dual other):
@@ -82,8 +81,7 @@ cdef class Dual:
         Returns:
             - Dual: A new dual number which is the difference of the two dual numbers.
         """
-        if isinstance(other, (int, float)):
-            other = Dual(other,0)
+        
         return Dual(self.real - other.real, self.dual - other.dual)
     
     def __rsub__(self, Dual other):
@@ -103,12 +101,11 @@ cdef class Dual:
         Returns:
             - Dual: A new dual number which is the product of the two dual numbers.
         """
-        if isinstance(other, (int, float)):
-            other = Dual(other,0)
-        a=self.real
-        b=self.dual
-        c=other.real
-        d=other.dual
+        
+        cdef double a=self.real
+        cdef double b=self.dual
+        cdef double c=other.real
+        cdef double d=other.dual
         return Dual(a * c, a * d + b * c)
     
     def __rmul__(self, Dual other):
@@ -128,12 +125,11 @@ cdef class Dual:
         Returns:
             - Dual: A new dual number which is the ratio of the two dual numbers.
         """
-        if isinstance(other, (int, float)):
-            other = Dual(other,0)
-        a=self.real
-        b=self.dual
-        c=other.real
-        d=other.dual
+        
+        cdef double a=self.real
+        cdef double b=self.dual
+        cdef double c=other.real
+        cdef double d=other.dual
         try:
             return Dual(a / c, (b * c - a * d) / (c * c))
         except ZeroDivisionError:
@@ -146,8 +142,7 @@ cdef class Dual:
         Returns:
             - Dual: A new dual number which is the ratio of the two dual numbers.
         """
-        if isinstance(other, (int, float)):
-            other = Dual(other,0)
+        
         return other.__truediv__(self)
     
     def __pow__(self, Dual other):
@@ -158,11 +153,10 @@ cdef class Dual:
         Returns:
             - Dual: A dual number raised to an exponent.
         """
-        if isinstance(other, (int, float)):
-            other = Dual(other,0)
-        a=self.real
-        b=self.dual
-        n=other.real
+        
+        cdef double a=self.real
+        cdef double b=self.dual
+        cdef double n=other.real
         if other.dual==0:
             return Dual(a ** n, n * b * a ** (n-1))
         else:
@@ -180,8 +174,7 @@ cdef class Dual:
         Returns:
             - Dual: The updated dual number after another number (int, float or Dual) has been added to it.
         """
-        if isinstance(other, (int, float)):
-            other = Dual(other,0)
+        
         self = Dual(self.real + other.real, self.dual + other.dual)
         return self
     
@@ -192,8 +185,7 @@ cdef class Dual:
         Returns:
             - Dual: The updated dual number after another number (int, float or Dual) has been subtracted from it.
         """
-        if isinstance(other, (int, float)):
-            other = Dual(other,0)
+        
         self = Dual(self.real - other.real, self.dual - other.dual)
         return self
 
@@ -204,12 +196,11 @@ cdef class Dual:
         Returns:
             - Dual: The updated dual number after another number (int, float or Dual) has been multiplied to it.
         """
-        if isinstance(other, (int, float)):
-            other = Dual(other,0)
-        a=self.real
-        b=self.dual
-        c=other.real
-        d=other.dual
+        
+        cdef double a=self.real
+        cdef double b=self.dual
+        cdef double c=other.real
+        cdef double d=other.dual
         self = Dual(a * c, a * d + b * c)
         return self
     
@@ -220,12 +211,11 @@ cdef class Dual:
         Returns:
             - Dual: The updated dual number after it has been divided by another number (int, float or Dual).
         """
-        if isinstance(other, (int, float)):
-            other = Dual(other,0)
-        a=self.real
-        b=self.dual
-        c=other.real
-        d=other.dual
+        
+        cdef double a=self.real
+        cdef double b=self.dual
+        cdef double c=other.real
+        cdef double d=other.dual
         try:
             self = Dual(a / c, (b * c - a * d) / (c * c))
             return self
@@ -242,12 +232,11 @@ cdef class Dual:
         Returns:
             - bool: True if the two dual numbers are equal (i.e. if both the real and dual parts are equal), otherwise returns False.
         """
-        if isinstance(other, (int, float)):
-            other = Dual(other,0)
-        a=self.real
-        b=self.dual
-        c=other.real
-        d=other.dual
+        
+        cdef double a=self.real
+        cdef double b=self.dual
+        cdef double c=other.real
+        cdef double d=other.dual
         if (a==c) & (b==d):
             return True
         else:
@@ -260,12 +249,11 @@ cdef class Dual:
         Returns:
             - bool: True if the two dual numbers are not equal (i.e. if either the real or dual parts are not equal), otherwise returns False.
         """
-        if isinstance(other, (int, float)):
-            other = Dual(other,0)
-        a=self.real
-        b=self.dual
-        c=other.real
-        d=other.dual
+        
+        cdef double a=self.real
+        cdef double b=self.dual
+        cdef double c=other.real
+        cdef double d=other.dual
         if (a!=c) or (b!=d):
             return True
         else:
@@ -281,8 +269,8 @@ cdef class Dual:
         Returns:
             - Dual: The inverse of the dual number.
         """
-        a=self.real
-        b=self.dual
+        cdef double a=self.real
+        cdef double b=self.dual
         try:
             return Dual(1 / a, - b / a**2)
         except ZeroDivisionError:
@@ -310,8 +298,8 @@ cdef class Dual:
             >>> x.sin()
             Dual(real=0.9092974268256817, dual=-0.4161468365471424)
         """
-        a=self.real
-        b=self.dual
+        cdef double a=self.real
+        cdef double b=self.dual
         return Dual(np.sin(a), b * np.cos(a))
 
     def cos(self):
@@ -326,8 +314,8 @@ cdef class Dual:
             >>> x.cos()
             Dual(real=-0.4161468365471424, dual=-0.9092974268256817)
         """
-        a=self.real
-        b=self.dual
+        cdef double a=self.real
+        cdef double b=self.dual
         return Dual(np.cos(a), - b * np.sin(a))
 
     def tan(self):
@@ -342,8 +330,8 @@ cdef class Dual:
             >>> x.tan()
             Dual(real=-2.185039863261519, dual=5.774399204041917)
         """
-        a=self.real
-        b=self.dual
+        cdef double a=self.real
+        cdef double b=self.dual
         return Dual(np.tan(a), b / (np.cos(a) ** 2))
 
     def log(self):
@@ -358,8 +346,8 @@ cdef class Dual:
             >>> x.log()
             Dual(real=0.6931471805599453, dual=0.5)
         """
-        a=self.real
-        b=self.dual
+        cdef double a=self.real
+        cdef double b=self.dual
         try:
             return Dual(np.log(a), b / a)
         except ZeroDivisionError:
@@ -377,8 +365,8 @@ cdef class Dual:
             >>> x.exp()
             Dual(real=7.38905609893065, dual=7.38905609893065)
         """
-        a=self.real
-        b=self.dual
+        cdef double a=self.real
+        cdef double b=self.dual
         return Dual(np.exp(a), b * np.exp(a))
 
 
