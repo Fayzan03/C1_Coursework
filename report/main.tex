@@ -21,6 +21,9 @@
 \textit{Remember to add WORDCOUNT and use of AI TOOLS}
 
 \section*{Introduction}
+This report details my implementation of a Python package that performs automatic differentiation using dual numbers. A dual number is of the form $a+b\epsilon$, where $a$ and $b$ are real numbers and $\epsilon$ is such that $\epsilon^2=0$ but $\epsilon \neq 0$. The values $a$ and $b$ are referred to as the 'real' and 'dual' parts of a dual number respectively. In this project, I implement a Python class that extends mathematical operations and some common mathematical functions to dual numbers. 
+
+The report will outline the various stages of development of the package. In section 1, I will briefly discuss the initial repository structure. In section 2, I will detail the implementation of the \texttt{Dual} class, how to install the package and how to utilise it to compute derivatives, including an example comparing to the corresponding analytical and numerical results. In section 3, I will discuss my test suite implementation for the package and in section 4 I will cover the Sphinx documentation. Finally, in section 5, I will attempt to Cythonize the package, compare the performance of the Python and Cython versions and build and test Cython wheels.
 
 \section{Initial Repository Structure}
 
@@ -30,7 +33,6 @@
 ├── docs/
 ├── dual_autodiff/
 │   ├── __init__.py
-│       ...
 ├── pyproject.toml
 ├── .gitignore 
 └── README.md
@@ -39,12 +41,12 @@
 
 My project repository was structured following good practices and initially contained the following files and directories:
 \begin{itemize}
-    \item \texttt{pyproject.toml} file: To configure the package
+    \item \texttt{pyproject.toml} file: To configure the package.
     \item \texttt{dual\_autodiff/} directory: This is where the source code of the package will be located. It must contain an \texttt{\_\_init\_\_.py} file to create a package out of the source code.
-    \item \texttt{docs/} directory: Where the documentation will be placed
-    \item \texttt{tests/} directory: Where the test files will be placed to test the package
-    \item \texttt{README.md} file: This provides an overview of the package and instructions on how to install it
-    \item \texttt{.gitignore} file: To ignore unnecessary files so they do not appear in the repository
+    \item \texttt{docs/} directory: Where the documentation will be placed.
+    \item \texttt{tests/} directory: Where the test files will be placed to test the package.
+    \item \texttt{README.md} file: This provides an overview of the package and instructions on how to install it.
+    \item \texttt{.gitignore} file: To ignore unnecessary files so they do not appear in the repository.
 \end{itemize}
 
 I also included a blank \texttt{version.py} file in the \texttt{dual\_autodiff} folder to implement automatic versioning and added the relevant lines to
@@ -237,5 +239,10 @@ To build wheels for the Cythonized package I use \texttt{cibuildwheel} and run D
 I now install the package using the wheels I have just created. After uploading the wheels to GitLab and downloading them again, I attempted to install the package on Windows Subsystem for Linux (WSL) on my PC. After creating a virtual environment in the Ubuntu terminal, I was able to install the Python 3.10 wheel successfully using \texttt{pip}. I was then able to run the package in a Python session and import the package in the tutorial notebook (after installing Jupyter with \texttt{pip install Jupyter}). Note that, in order to use the tutorial notebook fully, we also need to install \texttt{numpy, matplotlib} and the \texttt{dual\_autodiff} package as most of the examples are designed for the Python package, not the Cython one. For this reason, I have also created the \texttt{cython\_test} notebook to check that the package runs correctly. 
 
 I also installed the Python 3.11 wheel on CSD3 using the \texttt{scp} command to transfer the downloaded wheel file. The wheel installed successfully and I was able to use the package in a Python session. 
+
+\section*{Summary}
+
+In this project, I have implemented a package that performs automatic differentiation using dual numbers in both Python and Cython. Throughout this project, good software development practices have been demonstrated. I have created a well-structured package; provided a comprehensive and meaningful test suite; and outlined basic usage of the Python package with clear explanations, docstrings and examples in the documentation. I have also successfully Cythonized the package and created Cython wheels for Linux. Finally, I have evaluated the performance of the Cython package and shown that it provides a slight improvement due to static typing and compilation in C. 
+
 
 \end{document}
