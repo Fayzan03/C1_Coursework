@@ -23,7 +23,7 @@
 \section*{Introduction}
 This report details my implementation of a Python package that performs automatic differentiation using dual numbers. A dual number is of the form $a+b\epsilon$, where $a$ and $b$ are real numbers and $\epsilon$ is such that $\epsilon^2=0$ but $\epsilon \neq 0$. The values $a$ and $b$ are referred to as the 'real' and 'dual' parts of a dual number respectively. In this project, I implement a Python class that extends mathematical operations and some common mathematical functions to dual numbers. 
 
-The report will outline the various stages of development of the package. In section 1, I will briefly discuss the initial repository structure. In section 2, I will detail the implementation of the \texttt{Dual} class, how to install the package and how to utilise it to compute derivatives, including an example comparing to the corresponding analytical and numerical results. In section 3, I will discuss my test suite implementation for the package and in section 4 I will cover the Sphinx documentation. Finally, in section 5, I will attempt to Cythonize the package, compare the performance of the Python and Cython versions and build and test Cython wheels.
+The report will outline the various stages of development of the package. In section 1, I will briefly discuss the initial repository structure. In section 2, I will detail the implementation of the \texttt{Dual} class, how to install the package and how to utilise it to compute derivatives, including an example comparing to the corresponding analytical and numerical results. In section 3, I will discuss my test suite implementation for the package and in section 4 I will cover the Sphinx documentation. Finally, in section 5, I will attempt to Cythonize the package, compare the performance of the Python and Cython versions and build and use Cython wheels.
 
 \section{Initial Repository Structure}
 
@@ -180,7 +180,7 @@ and all of my tests are successful.
 \section{Documentation} \label{docs}
 The documentation for this package was created using Sphinx. The docstrings from the \texttt{Dual} class were implemented by linking to the core package modules in the \texttt{*.rst} files and including the \texttt{sphinx.ext.autodoc} extension in the \texttt{conf.py} file, which configures the documentation. The tutorial notebook was also included similarly using the \texttt{nbsphinx} extension. 
 
-The docstrings for the \texttt{Dual} class and its member functions have been formatted as shown in the C1 Research Computing course notes \textbf{REFERENCE} which follows best practices. I have also included some examples in the docstrings for the functions in \texttt{autodiff\_tools}. 
+The docstrings for the \texttt{Dual} class and its member functions have been formatted as shown in the C1 Research Computing course notes \cite{research_computing_docs} which follows best practices. I have also included some examples in the docstrings for the functions in \texttt{autodiff\_tools}. 
 
 The tutorial notebook showcases some of the various features implemented in the package including all the overloaded operators and mathematical functions. There is also an example which shows how to differentiate the function in section \ref{compderivs} using the \texttt{Dual} class and the same discussion, including the graphs from this section, is included here. There is also a section comparing the performance of the cythonised package, as will be seen in 
 the next sections.
@@ -204,7 +204,7 @@ dual_autodiff_x
 
 I created a package directory for my Cython package \texttt{dual\_autodiff\_x} as shown above. Initially I wanted to make separate folders for the pure Python package and Cython package, but I had issues with dynamic versioning due to the location of the git tags when I moved the Python package into a subdirectory. Instead I decided to leave my Python package structure as before, with the main \texttt{pyproject.toml} file and make the Cython package directory at the same level. 
 
-Within the \texttt{dual\_autodiff\_x} directory, I added a new \texttt{pyproject.toml} file indicating the location of the new Cython modules and including \texttt{"Cython"} in the build requirements. The \texttt{setup.py} file follows closely the example provided in the C1 notes \textbf{REFERENCE}, which sets up the Cythonized modules/extensions correctly so that we can correctly build the package and wheels.
+Within the \texttt{dual\_autodiff\_x} directory, I added a new \texttt{pyproject.toml} file indicating the location of the new Cython modules and including \texttt{"Cython"} in the build requirements. The \texttt{setup.py} file follows closely the example provided in the C1 notes \cite{research_computing_docs}, which sets up the Cythonized modules/extensions correctly so that we can correctly build the package and wheels.
 
 I copied my Python source code into a single \texttt{dual.pyx} file, as I found it simpler to run in the next section when adding static typing. I then ran the following command
 \begin{lstlisting}
@@ -216,7 +216,7 @@ I was then able to install the Cythonized package with \texttt{pip install -e .}
 
 \subsection{ Comparing Performance }
 
-After creating the Cython package, I decided to include static typing in my source code to further optimise the code. The purpose of this is to declare the variable type so that it is known at compile time, removing the need for type checking during execution \textbf{REFERENCE}. Changing the \texttt{def class Dual} to \texttt{cdef class Dual}, or including variable declarations such as \texttt{cdef double real} help are examples of the static typing I included. A consequence of this is that my Cython package can no longer apply the binary operators (e.g. +,-,*,/,+=,...) I defined in the Dual class to a Dual and a non-Dual type (for example, \texttt{Dual(2,1) + 2} is no longer permitted but \texttt{Dual(2,1) + Dual(2,0)} is). Since this would have required redefining many of the functions in my package, I decided to leave this extra functionality out since it is not strictly required for the package to work. 
+After creating the Cython package, I decided to include static typing in my source code to further optimise the code. The purpose of this is to declare the variable type so that it is known at compile time, removing the need for type checking during execution \cite{research_computing_docs}. Changing the \texttt{def class Dual} to \texttt{cdef class Dual}, or including variable declarations such as \texttt{cdef double real} help are examples of the static typing I included. A consequence of this is that my Cython package can no longer apply the binary operators (e.g. +,-,*,/,+=,...) I defined in the Dual class to a Dual and a non-Dual type (for example, \texttt{Dual(2,1) + 2} is no longer permitted but \texttt{Dual(2,1) + Dual(2,0)} is). Since this would have required redefining many of the functions in my package, I decided to leave this extra functionality out since it is not strictly required for the package to work. 
 
 I compared the performance of both packages in the tutorial notebook by running a set of operations and functions implemented in the packages. I then computed the total time taken to run these tests for different numbers of iterations over 10 calls using the \texttt{timeit} library. The results of this performance comparison are shown in Figure \ref{fig:q9_timeit}. For example, for 100000 iterations I computed an execution time of 13.44 seconds for the Python package compared to 7.55 seconds for the Cython package. From the first graph, we observe that the Cythonized package is slightly faster across different numbers of samples, and is almost twice as fast as is deduced from the second graph. This is due to the fact that the Cython code is compiled in C++, which provides an initial speedup, and static typing which provides an additional speedup. Further optimisation may improve the difference in performance further. \textbf{ADD HERE?}
 
@@ -228,7 +228,7 @@ I compared the performance of both packages in the tutorial notebook by running 
 \end{figure}
 
 \subsection{Linux Wheels}
-To build wheels for the Cythonized package I use \texttt{cibuildwheel} and run Docker on my Windows PC by installing Docker Desktop and opening it. I built Linux wheels for Python 3.11 using the following command given in C1 notes: \textbf{REFERENCE}
+To build wheels for the Cythonized package I use \texttt{cibuildwheel} and run Docker on my Windows PC by installing Docker Desktop and opening it. I built Linux wheels for Python 3.11 using the following command given in C1 notes \cite{research_computing_docs}:
 \begin{lstlisting}
     CIBW_BUILD="cp311-manylinux_x86_64" CIBW_ARCHS="x86_64" cibuildwheel --platform linux
 \end{lstlisting}
@@ -244,5 +244,14 @@ I also installed the Python 3.11 wheel on CSD3 using the \texttt{scp} command to
 
 In this project, I have implemented a package that performs automatic differentiation using dual numbers in both Python and Cython. Throughout this project, good software development practices have been demonstrated. I have created a well-structured package; provided a comprehensive and meaningful test suite; and outlined basic usage of the Python package with clear explanations, docstrings and examples in the documentation. I have also successfully Cythonized the package and created Cython wheels for Linux. Finally, I have evaluated the performance of the Cython package and shown that it provides a slight improvement due to static typing and compilation in C. 
 
+\section*{Appendix - Declaration of Use of Autogeneration Tools:
+}
+
+Generative tools were not used in the writing of the introduction, main body, or summary of this report. I have used generative tools to generate the reference at the end of this document. I have edited this reference from the output produced from the generative tool. 
+
+A declaration of the use of generative tools in writing the code in this project is given in the \texttt{README.md} file in the coursework GitLab repository. 
+
+\bibliographystyle{plain}
+\bibliography{references}
 
 \end{document}
