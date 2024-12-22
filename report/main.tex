@@ -4,13 +4,37 @@
 \usepackage[export]{adjustbox}
 \usepackage{graphicx} % Required for inserting images
 \usepackage[italicdiff]{physics}
+\usepackage{url}
 %\usepackage{algorithm}
 %\usepackage{algpseudocode}
+\usepackage{dirtree}
 \usepackage{verbatim}
 \usepackage{listings}
 \usepackage{xcolor}
 \usepackage{filecontents}
 \usepackage{subcaption}
+
+\usepackage{fancyvrb}
+\usepackage[utf8]{inputenc}
+\usepackage{pmboxdraw}
+
+\lstdefinestyle{mypythonstyle}{ basicstyle=\ttfamily\footnotesize, backgroundcolor=\color{lightgray!20}, 
+frame=single,
+breaklines=true,
+captionpos=b, 
+numbers=left,
+numberstyle=\tiny\color{gray},
+stepnumber=1,
+language=python } 
+
+\lstset{ basicstyle=\ttfamily\footnotesize, backgroundcolor=\color{lightgray!20}, 
+frame=single,
+breaklines=true,
+captionpos=b, 
+numbers=left,
+numberstyle=\tiny\color{gray},
+stepnumber=1,
+language=txt } 
 
 \title{C1: Research Computing Coursework Assignment}
 \author{Fayzan Mahmood}
@@ -18,12 +42,12 @@
 \begin{document}
 
 \maketitle
-\textit{Remember to add WORDCOUNT and use of AI TOOLS}
+\textit{Wordcount: 2964}
 
 \section*{Introduction}
 This report details my implementation of a Python package that performs automatic differentiation using dual numbers. A dual number is of the form $a+b\epsilon$, where $a$ and $b$ are real numbers and $\epsilon$ is such that $\epsilon^2=0$ but $\epsilon \neq 0$. The values $a$ and $b$ are referred to as the 'real' and 'dual' parts of a dual number respectively. In this project, I implement a Python class that extends mathematical operations and some common mathematical functions to dual numbers. 
 
-The report will outline the various stages of development of the package. In section 1, I will briefly discuss the initial repository structure. In section 2, I will detail the implementation of the \texttt{Dual} class, how to install the package and how to utilise it to compute derivatives, including an example comparing to the corresponding analytical and numerical results. In section 3, I will discuss my test suite implementation for the package and in section 4 I will cover the Sphinx documentation. Finally, in section 5, I will attempt to Cythonize the package, compare the performance of the Python and Cython versions and build and use Cython wheels.
+The report will outline the various stages of development of the package. In section 1, I will briefly discuss the initial repository structure. In section 2, I will detail the implementation of the \texttt{Dual} class, how to install the package and how to utilise it to compute derivatives, including an example comparing to the corresponding analytical and numerical results. In section 3, I will discuss my test suite implementation for the package and in section 4, I will cover the Sphinx documentation. Finally in section 5, I will attempt to Cythonize the package, compare the performance of the Python and Cython versions and build and use Cython wheels.
 
 \section{Initial Repository Structure}
 
@@ -32,7 +56,7 @@ The report will outline the various stages of development of the package. In sec
 ├── tests/
 ├── docs/
 ├── dual_autodiff/
-│   ├── __init__.py
+│   └── __init__.py
 ├── pyproject.toml
 ├── .gitignore 
 └── README.md
@@ -49,45 +73,36 @@ My project repository was structured following good practices and initially cont
     \item \texttt{.gitignore} file: To ignore unnecessary files so they do not appear in the repository.
 \end{itemize}
 
-I also included a blank \texttt{version.py} file in the \texttt{dual\_autodiff} folder to implement automatic versioning and added the relevant lines to
 
 \subsection{Writing Project Configuration}
 My pyproject.toml file for this project is shown below:
-\lstset{ basicstyle=\ttfamily\footnotesize, backgroundcolor=\color{lightgray!20}, 
-frame=single,
-breaklines=true,
-captionpos=b, 
-numbers=left,
-stepnumber=1,
-language=python } 
-% Display the content of pyproject.toml 
-\lstinputlisting{pyproject.toml}
 
-The file contains important information to configure the package. Under \texttt{build-system}, there are a list of of build requirements to build the python package and the build-backend. \texttt{setuptools\_scm} is needed for dynamic versioning. 
+% Display the content of pyproject.toml 
+\lstinputlisting{pyproject.txt}
+
+The file contains important information to configure the package. Under \texttt{build-system}, there are a list of of build requirements to build the python package and the build-backend.
 
 The \texttt{[project]} section details other information about the project, including the name; version; a short description of the project; where to find the readme file; the minimum Python version required for this package; the author(s) of the package; and some keywords and classifiers which may help users find the package if uploaded to PyPI. 
 
-One of the core features of the package is the implementation of various mathematical functions on dual numbers, which all depend on NumPy. This has therefore been included in the package dependencies.
+One of the core features of the package is the implementation of mathematical functions (e.g. \texttt{sin, exp}) on dual numbers, which all depend on NumPy. This has therefore been included in the package dependencies.
 
 The final two lines tell the configuration file to find the package in the same directory level that this file is in.
-
-\textbf{ADD CAVEAT ON VERSIONING}
 
 \section{ Creating the \texttt{dual\_autodiff} Package}
 
 \subsection{Implementing the \texttt{Dual} Class}
 
-The package directory contains two files, \texttt{dual.py} and \texttt{autodiff\_tools.py} that contain a \texttt{Dual} class and many member functions that implement dual numbers, define various operations on them and several mathematical functions. 
+The package directory contains two files, \texttt{dual.py} and \texttt{autodiff\_tools.py}, that define a \texttt{Dual} class and some member functions that implement dual numbers, define various operations on them and several mathematical functions. 
 
 The class constructor defines a dual number given a real part and dual part. These are assigned as attributes to an instance of the Dual class and can be called from within a Python session, or alternatively using the corresponding member functions which return either the dual part or real part. 
 
 Most of the functions in \texttt{dual.py} are 'magic methods' (defined by the double underline '\_\_') which overload pre-existing operators to allow them to be used for dual numbers. An important method to implement was the \texttt{\_\_repr\_\_} method which defines how dual numbers are displayed in a Python session or notebook. This is to ensure the following output: 
 
-\begin{lstlisting}
->>> from dual_autodiff import Dual
->>> x=Dual(2,1)
->>> x
-Dual(real=2, dual=1)
+\begin{lstlisting}[style=mypythonstyle]
+    >>> from dual_autodiff import Dual
+    >>> x=Dual(2,1)
+    >>> x
+    Dual(real=2, dual=1)
 \end{lstlisting}
 
 The other methods extend arithmetic operators, operate-and-assign operators, comparison operators and unary operators (e.g. returning the inverse or negative of a dual number) so that they apply to dual numbers. The details of each method is explained in the package documentation. Considerations were taken to ensure that the arithmetic operators apply to two numbers of type 'Dual' as well as for real numbers (of type 'int' and 'float') to be combined with dual numbers on either the left-hand side or right-hand side. An example of this can be seen in the tutorial notebook.
@@ -103,7 +118,7 @@ which follows from Taylor's theorem where the higher order terms vanish since $\
 \sin(a+b\epsilon) = \sin(a) + b \cos(a) \epsilon
 \]
 so that 
-\begin{lstlisting}
+\begin{lstlisting}[style=mypythonstyle]
     >>> x = Dual(2, 1)
     >>> x.sin()
     Dual(real=0.9092974268256817, dual=-0.4161468365471424)
@@ -114,16 +129,16 @@ Docstrings have been provided for the \texttt{Dual} class and its member functio
 
 \subsection{ Installing the Package }
 I created a virtual environment in which to install the package. To do this, I ran the following commands in the root directory:
-\begin{lstlisting}
+\begin{lstlisting}[style=mypythonstyle]
     python -m venv venvs/c1_cwk
     source venvs/c1_cwk/Scripts/activate
 \end{lstlisting}
 Then I run the following command to install the \texttt{dual\_autodiff} package:
-\begin{lstlisting}
+\begin{lstlisting}[style=mypythonstyle]
     pip install -e .
 \end{lstlisting}
 I can then import the package from anywhere by opening a python session and writing
-\begin{lstlisting}
+\begin{lstlisting}[style=mypythonstyle]
     >>> import dual_autodiff as df
     dual_autodiff package version: 0.1.0
 \end{lstlisting}
@@ -172,7 +187,7 @@ For example, to test my overloading of the addition operator, I checked that add
 The above checks were carried out using the \texttt{assert} statement. Other tests involved checking the correct output was displayed, such as when printing an instance of the \texttt{Dual} class, but also in the cases where an error is expected due to an invalid-use case. To do this, I used the pytest functionality \texttt{capsys} to capture the output and an assert statement to check the correct output is shown. Further, in other tests where floating-point precision affects the result, the use of \texttt{pytest.approx} was useful in comparing to the expected outcome to a relevent precision. 
 
 We can then run the test suite with the following command in the root directory:
-\begin{lstlisting}
+\begin{lstlisting}[style=mypythonstyle]
     pytest -s tests/*
 \end{lstlisting}
 and all of my tests are successful. 
@@ -180,34 +195,33 @@ and all of my tests are successful.
 \section{Documentation} \label{docs}
 The documentation for this package was created using Sphinx. The docstrings from the \texttt{Dual} class were implemented by linking to the core package modules in the \texttt{*.rst} files and including the \texttt{sphinx.ext.autodoc} extension in the \texttt{conf.py} file, which configures the documentation. The tutorial notebook was also included similarly using the \texttt{nbsphinx} extension. 
 
-The docstrings for the \texttt{Dual} class and its member functions have been formatted as shown in the C1 Research Computing course notes \cite{research_computing_docs} which follows best practices. I have also included some examples in the docstrings for the functions in \texttt{autodiff\_tools}. 
+The docstrings for the \texttt{Dual} class and its member functions have been formatted as shown in the C1 Research Computing course notes \cite{research_computing_docs} which follows best practices. The purpose of these docstrings are to help the user understand the code I have written. I have given a short description of the main class and its attributes (i.e. dual, real) along with their types. For the methods, this includes a short description of the function, a list of parameters and their types, and the output. 
+I have also included some examples in the docstrings for the functions in \texttt{autodiff\_tools}. 
 
-The tutorial notebook showcases some of the various features implemented in the package including all the overloaded operators and mathematical functions. There is also an example which shows how to differentiate the function in section \ref{compderivs} using the \texttt{Dual} class and the same discussion, including the graphs from this section, is included here. There is also a section comparing the performance of the cythonised package, as will be seen in 
-the next sections.
+The tutorial notebook showcases some of the various features implemented in the package including examples of the overloaded operators and mathematical functions. There is also an example which shows how to differentiate the function in section \ref{compderivs} using the \texttt{Dual} class and the same discussion, including the graphs from this section, is included here. There is also a section comparing the performance of the Python and Cythonized package, as will be seen in section 5.
 
 Instructions on how to build the documentation are given in the \texttt{README.md} file in the GitLab repository. 
 
 \section{Cythonizing the Package}
 
 \subsection{Creating \texttt{dual\_autodiff\_x}}
-\begin{lstlisting}
+\begin{verbatim}
 dual_autodiff_x
 ├── pyproject.toml
-├── requirements.txt
 ├── setup.py
-├── src
-   └── dual_autodiff_x
-│   │   ├── __init__.py
-│   │   └── dual.pyx
+└── src
+    └── dual_autodiff_x
+        ├── __init__.py
+        └── dual.pyx
 
-\end{lstlisting}
+\end{verbatim}
 
-I created a package directory for my Cython package \texttt{dual\_autodiff\_x} as shown above. Initially I wanted to make separate folders for the pure Python package and Cython package, but I had issues with dynamic versioning due to the location of the git tags when I moved the Python package into a subdirectory. Instead I decided to leave my Python package structure as before, with the main \texttt{pyproject.toml} file and make the Cython package directory at the same level. 
+I created a package directory for my Cython package \texttt{dual\_autodiff\_x} as shown above. Initially, I wanted to make separate folders for the pure Python package and Cython package, but I had issues with dynamic versioning (which I later removed) due to the location of the git tags when I moved the Python package into a subdirectory. Instead, I decided to leave my Python package structure as before and add the Cython package directory at the root level. 
 
-Within the \texttt{dual\_autodiff\_x} directory, I added a new \texttt{pyproject.toml} file indicating the location of the new Cython modules and including \texttt{"Cython"} in the build requirements. The \texttt{setup.py} file follows closely the example provided in the C1 notes \cite{research_computing_docs}, which sets up the Cythonized modules/extensions correctly so that we can correctly build the package and wheels.
+Within the \texttt{dual\_autodiff\_x} directory, I added a new \texttt{pyproject.toml} file indicating the location of the new Cython modules in the \texttt{src} folder and including \texttt{"Cython"} in the build requirements. The \texttt{setup.py} file follows closely the example provided in the C1 notes \cite{research_computing_docs}, which sets up the Cythonized modules/extensions correctly so that we can correctly build the package and wheels.
 
 I copied my Python source code into a single \texttt{dual.pyx} file, as I found it simpler to run in the next section when adding static typing. I then ran the following command
-\begin{lstlisting}
+\begin{lstlisting}[style=mypythonstyle]
     python setup.py build_ext --inplace
 \end{lstlisting}
 and this created the \texttt{.c} and \texttt{.pyd} files as expected. 
@@ -216,9 +230,9 @@ I was then able to install the Cythonized package with \texttt{pip install -e .}
 
 \subsection{ Comparing Performance }
 
-After creating the Cython package, I decided to include static typing in my source code to further optimise the code. The purpose of this is to declare the variable type so that it is known at compile time, removing the need for type checking during execution \cite{research_computing_docs}. Changing the \texttt{def class Dual} to \texttt{cdef class Dual}, or including variable declarations such as \texttt{cdef double real} help are examples of the static typing I included. A consequence of this is that my Cython package can no longer apply the binary operators (e.g. +,-,*,/,+=,...) I defined in the Dual class to a Dual and a non-Dual type (for example, \texttt{Dual(2,1) + 2} is no longer permitted but \texttt{Dual(2,1) + Dual(2,0)} is). Since this would have required redefining many of the functions in my package, I decided to leave this extra functionality out since it is not strictly required for the package to work. 
+After creating the Cython package, I decided to include static typing in my source code to further optimise the code. The purpose of this is to declare the variable type so that it is known at compile time, removing the need for type checking during execution \cite{research_computing_docs}. Changing the \texttt{def class Dual} to \texttt{cdef class Dual}, or including variable declarations such as \texttt{cdef public double real} help are examples of the static typing I included (public is included here as attributes in C are private by default). A consequence of this is that my Cython package can no longer apply the binary operators (e.g. +,-,*,/,+=,...) I defined in the Dual class to a Dual and a non-Dual type (for example, \texttt{Dual(2,1) + 2} is no longer permitted but \texttt{Dual(2,1) + Dual(2,0)} is). Since this would have required redefining many of the functions in my package, I decided to leave this extra functionality out since it is not strictly required for the package to work. 
 
-I compared the performance of both packages in the tutorial notebook by running a set of operations and functions implemented in the packages. I then computed the total time taken to run these tests for different numbers of iterations over 10 calls using the \texttt{timeit} library. The results of this performance comparison are shown in Figure \ref{fig:q9_timeit}. For example, for 100000 iterations I computed an execution time of 13.44 seconds for the Python package compared to 7.55 seconds for the Cython package. From the first graph, we observe that the Cythonized package is slightly faster across different numbers of samples, and is almost twice as fast as is deduced from the second graph. This is due to the fact that the Cython code is compiled in C++, which provides an initial speedup, and static typing which provides an additional speedup. Further optimisation may improve the difference in performance further. \textbf{ADD HERE?}
+I compared the performance of both packages in the tutorial notebook by running a set of operations and functions implemented in the packages. I then computed the total time taken to run these tests for different numbers of iterations over 10 calls using the \texttt{timeit} library. The results of this performance comparison are shown in Figure \ref{fig:q9_timeit}. For example, for 100000 iterations I computed an execution time of 13.44 seconds for the Python package compared to 7.55 seconds for the Cython package. From the first graph, we observe that the Cythonized package is slightly faster across different numbers of samples, and is almost twice as fast as is deduced from the second graph. This is due to the fact that the Cython code is compiled in C++, which provides an initial speedup, and static typing which provides an additional speedup. Further optimisation may improve the difference in performance further (for example, using Cython's \texttt{annotate} feature to identify bottlenecks in the code \cite{neurohackweek_cython_annotations}).
 
 \begin{figure}
     \centering
@@ -229,14 +243,14 @@ I compared the performance of both packages in the tutorial notebook by running 
 
 \subsection{Linux Wheels}
 To build wheels for the Cythonized package I use \texttt{cibuildwheel} and run Docker on my Windows PC by installing Docker Desktop and opening it. I built Linux wheels for Python 3.11 using the following command given in C1 notes \cite{research_computing_docs}:
-\begin{lstlisting}
+\begin{lstlisting}[style=mypythonstyle]
     CIBW_BUILD="cp311-manylinux_x86_64" CIBW_ARCHS="x86_64" cibuildwheel --platform linux
 \end{lstlisting}
  and similarly for Python 3.10 where we change the Python version to \texttt{cp310}. The wheels are located in the \texttt{wheelhouse} directory in the root directory of my Cythonized package. Unzipping the wheels into the \texttt{wheel\_contents} directory, I checked that \texttt{*.pyd, *.so} files and no \texttt{*.pyx} files were present. However, there are still \texttt{*.c} files present and \texttt{\_\_init\_\_.py} files present.
 
  \subsection{ Using the Linux Wheels }
 
-I now install the package using the wheels I have just created. After uploading the wheels to GitLab and downloading them again, I attempted to install the package on Windows Subsystem for Linux (WSL) on my PC. After creating a virtual environment in the Ubuntu terminal, I was able to install the Python 3.10 wheel successfully using \texttt{pip}. I was then able to run the package in a Python session and import the package in the tutorial notebook (after installing Jupyter with \texttt{pip install Jupyter}). Note that, in order to use the tutorial notebook fully, we also need to install \texttt{numpy, matplotlib} and the \texttt{dual\_autodiff} package as most of the examples are designed for the Python package, not the Cython one. For this reason, I have also created the \texttt{cython\_test} notebook to check that the package runs correctly. 
+I now install the package using the wheels I have just created. After uploading the wheels to GitLab and downloading them again, I attempted to install the package on Windows Subsystem for Linux (WSL) on my PC. After creating a virtual environment in the Ubuntu terminal, I was able to install the Python 3.10 wheel successfully using \texttt{pip}. I was then able to run the package in a Python session and import the package in the tutorial notebook (after installing Jupyter with \texttt{pip install jupyter}). Note that, in order to use the tutorial notebook fully, we also need to install \texttt{numpy, matplotlib} and the \texttt{dual\_autodiff} package as most of the examples are designed for the Python package, not the Cython one. In the GitLab repository, I have provided a conda environment which contains all the packages installed in my local virtual environment during this project, which is sufficient to run the notebook. I have also created the \texttt{cython\_test} notebook to check that the package runs correctly without the need to set up the conda environment or install more packages. 
 
 I also installed the Python 3.11 wheel on CSD3 using the \texttt{scp} command to transfer the downloaded wheel file. The wheel installed successfully and I was able to use the package in a Python session. 
 
@@ -247,7 +261,7 @@ In this project, I have implemented a package that performs automatic differenti
 \section*{Appendix - Declaration of Use of Autogeneration Tools:
 }
 
-Generative tools were not used in the writing of the introduction, main body, or summary of this report. I have used generative tools to generate the reference at the end of this document. I have edited this reference from the output produced from the generative tool. 
+Generative tools were not used in the writing of the introduction, main body, or summary of this report. I have used generative tools to generate the references at the end of this document. I have modified these references from the output produced from the generative tool. 
 
 A declaration of the use of generative tools in writing the code in this project is given in the \texttt{README.md} file in the coursework GitLab repository. 
 

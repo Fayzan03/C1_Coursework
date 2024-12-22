@@ -94,3 +94,14 @@ python -m ipykernel install --user --name C1Coursework --display-name "C1Coursew
 You should now be able to run the notebooks in this repository.
 
 To deactivate the conda environment, run `conda deactivate`.
+
+### Declaration of Use of Autogeneration Tools
+
+Microsoft Copilot was used in the following cases:
+- In generating some of the test cases in the test suite where they became repetitive. For example, where I have written tests for the addition of dual numbers, Copilot was used to autocomplete suggestions for subtraction, multiplication, and division of dual numbers. These were then manually checked for errors.
+- In generating some of the alternative wordings in the docstrings for the `Dual` class, which were then modified before being used.
+- To modify the way in which dual numbers are displayed, Copilot suggested the use of the `__repr__` method which I then implemented manually. 
+- To implement integers and floats as dual numbers, Copilot suggested the `__radd__` etc. methods which I then implemented manually. It also suggested the use of 'isinstance' to check if the input is a int or float, which I then implemented manually in each case. 
+- To separate the Dual class member functions in `autodiff_tools` into a separate file, Copilot suggested importing each function into the main file. I then implemented this manually for the Dual class.
+
+A declaration of the use of generative tools in writing the report is given in the report itself.
